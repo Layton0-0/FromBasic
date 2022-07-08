@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import triple.mile.entity.Place;
 import triple.mile.repository.PlaceRepository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,5 +19,6 @@ public class PlaceService {
         return placeRepository.save(place);
     }
 
-    public Optional<Place> findByPlaceId(UUID placeId){ return placeRepository.findById(placeId);}
+    public Place findByPlaceId(UUID placeId){ return placeRepository.findByPlaceId(placeId);}
+
 }

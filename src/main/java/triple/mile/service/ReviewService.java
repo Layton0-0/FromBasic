@@ -2,10 +2,12 @@ package triple.mile.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import triple.mile.entity.Place;
 import triple.mile.entity.Review;
+import triple.mile.entity.User;
 import triple.mile.repository.ReviewRepository;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,11 +24,15 @@ public class ReviewService {
         return reviewRepository.save(review);
     }
 
-    public Optional<Review> findByReviewId(UUID reviewId){
-        return reviewRepository.findById(reviewId);
+    public Review findByReviewId(UUID reviewId){
+        return reviewRepository.findByReviewId(reviewId);
     }
 
     public void deleteReview(UUID reviewId){
         reviewRepository.deleteById(reviewId);
+    }
+
+    public List<Review> findByPlaceAndUser(Place place, User user) {
+        return reviewRepository.findByPlaceAndUser(place, user);
     }
 }

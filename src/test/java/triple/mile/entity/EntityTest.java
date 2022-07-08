@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import triple.mile.repository.PhotoRepository;
-import triple.mile.repository.PlaceRepository;
-import triple.mile.repository.ReviewRepository;
-import triple.mile.repository.UserRepository;
+import triple.mile.repository.*;
 import triple.mile.service.ReviewService;
 
 import javax.transaction.Transactional;
@@ -20,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@Rollback(false)
+//@Rollback(false)
 class EntityTest {
 
     @Autowired
@@ -33,23 +30,42 @@ class EntityTest {
     PlaceRepository placeRepository;
     @Autowired
     PhotoRepository photoRepository;
+    @Autowired
+    PointRepository pointRepository;
 
     @Test
+    @DisplayName("엔티티 생성 테스트")
     public void testEntity(){
-        User user = new User(UUID.randomUUID());
-        userRepository.save(user);
+        User user = userRepository.save(new User(UUID.randomUUID()));
 
-        Place place = new Place(UUID.randomUUID());
-        placeRepository.save(place);
+        Place place = placeRepository.save(new Place(UUID.randomUUID()));
 
-        Review review = new Review(UUID.randomUUID(), "넘 조아영", user, place);
-        reviewRepository.save(review);
+        Review review = reviewRepository.save(new Review(UUID.randomUUID(), "새 리뷰", user, place));
+        user.addReviews(review);
+        place.addReviews(review);
 
-        Photo photo = new Photo(UUID.randomUUID(), review);
-        photoRepository.save(photo);
+        Photo photo = photoRepository.save(new Photo(UUID.randomUUID(), review));
+        review.addPhotos(photo);
+
+        PointHistory pointHistory = pointRepository.save(new PointHistory(1, "REVIEW", review.getReviewId(), "CREATE_REVIEW", user));
+        user.changeUserPoint(1, pointHistory);
 
         List<Review> byUser = reviewRepository.findByUser(user);
-        assertThat(review).isIn(byUser);
+        assertThat(byUser).contains(review);
+        byUser = user.getReviews();
+        assertThat(byUser).contains(review);
+
+    }
+
+    @Test
+    @DisplayName("user와 place 생성")
+    public void createUserAndPlace() {
+        User user = userRepository.save(new User(UUID.randomUUID()));
+
+        Place place = placeRepository.save(new Place(UUID.randomUUID()));
+
+        assertThat(user).isNotNull();
+        assertThat(place).isNotNull();
     }
 
     @Test
@@ -61,7 +77,7 @@ class EntityTest {
         Place place = new Place(UUID.randomUUID());
         placeRepository.save(place);
 
-        Review review = new Review(UUID.randomUUID(), "장난아냐", user, place);
+        Review review = new Review(UUID.randomUUID(), "완전 조음", user, place);
 
         Review review1 = reviewService.saveReview(review);
         Assertions.assertThat(review.getReviewId()).isEqualTo(review1.getReviewId());

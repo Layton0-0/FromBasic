@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import triple.mile.entity.User;
 import triple.mile.repository.UserRepository;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -20,5 +20,9 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> findByUserId(UUID userId) { return userRepository.findById(userId);}
+    public User findByUserId(UUID userId) { return userRepository.findByUserId(userId);}
+
+    public List<User> findAllUser() {
+        return userRepository.findAll();
+    }
 }
